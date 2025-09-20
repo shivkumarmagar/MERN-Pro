@@ -1,0 +1,120 @@
+// This is your Prisma schema file for SQLite development
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  userId        String    @unique // User's chosen username/ID
+  name          String
+  email         String    @unique
+  passwordHash  String    // Required password hash
+  role          String    @default("PATIENT") // PATIENT, DOCTOR, ADMIN
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  doctorProfile DoctorProfile?
+  appointments  Appointment[]
+
+  @@map("users")
+}
+
+model DoctorProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  bio            String?
+  specialties    String   // JSON string for specialties array
+  clinicAddress  String
+  clinicLat      Float
+  clinicLng      Float
+  consultationFee Float
+  timezone       String   @default("UTC")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availability Availability[]
+  appointments Appointment[]
+
+  @@map("doctor_profiles")
+}
+
+model Availability {
+  id             String    @id @default(cuid())
+  doctorId       String
+  dayOfWeek      String?   // MONDAY, TUESDAY, etc.
+  date           DateTime? // For specific date exceptions
+  startTime      String    // HH:MM format
+  endTime        String    // HH:MM format
+  slotDurationMins Int     @default(30)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relations
+  doctor DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@map("availability")
+}
+
+model Appointment {
+  id               String           @id @default(cuid())
+  patientId        String
+  doctorId         String
+  startAt          DateTime
+  endAt            DateTime
+  status           String           @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  paymentStatus    String           @default("PENDING") // PENDING, PAID, REFUNDED
+  amount           Float
+  currency         String           @default("USD")
+  bookingCreatedAt DateTime         @default(now())
+  cancelledAt      DateTime?
+  cancellationReason String?
+
+  // Relations
+  patient User    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@map("appointments")
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  appointmentId     String
+  paymentProvider   String          // STRIPE, PAYPAL
+  providerPaymentId String
+  status            String
+  amount            Float
+  currency          String          @default("USD")
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relations
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+
+// Slot locking table for concurrency control
+model AppointmentLock {
+  id        String   @id @default(cuid())
+  doctorId  String
+  startAt   DateTime
+  endAt     DateTime
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([doctorId, startAt])
+  @@map("appointment_locks")
+}
