@@ -1,1 +1,12 @@
-
+{
+  "name": "mern-pro",
+  "version": "1.0.0",
+  "description": "A MERN stack project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "react-scripts build"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
