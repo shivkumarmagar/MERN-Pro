@@ -1,6 +1,5 @@
 {
   "name": "mern-pro",
-  "version": "1.0.0",
   "private": true,
   "description": "A MERN stack project",
   "main": "src/index.js",
