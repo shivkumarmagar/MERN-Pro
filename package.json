@@ -1,14 +1,29 @@
 {
   "name": "mern-pro",
   "version": "1.0.0",
+  "private": true,
   "description": "A MERN stack project",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "react-scripts build"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
-  "react-scripts": "^5.0.1"
-},
-  "devDependencies": {}
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
+    // Add any other dependencies your app needs here
+  },
+  "devDependencies": {
+    // Add dev dependencies here if needed
+  },
+  "keywords": [
+    "mern",
+    "react",
+    "frontend"
+  ],
+  "author": "shivkumarmagar",
+  "license": "MIT"
 }
