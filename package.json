@@ -14,10 +14,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1"
-    // Add any other dependencies your app needs here
-  },
-  "devDependencies": {
-    // Add dev dependencies here if needed
   },
   "keywords": [
     "mern",
